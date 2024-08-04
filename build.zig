@@ -20,13 +20,17 @@ pub fn build(b: *std.Build) void {
         .root_source_file = b.path("src/main.zig"),
         .target = target,
         .optimize = optimize,
+        .single_threaded = true,
     });
 
     const wgpu_native_dep = b.dependency("wgpu_native_zig", .{});
     const zigwin32_dep = b.dependency("zigwin32", .{});
 
     exe.root_module.addImport("wgpu", wgpu_native_dep.module("wgpu"));
+
     exe.root_module.addImport("zigwin32", zigwin32_dep.module("zigwin32"));
+    exe.subsystem = .Windows;
+    exe.pie = true;
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
