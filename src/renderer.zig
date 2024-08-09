@@ -144,7 +144,7 @@ pub fn render(self: *Renderer) !void {
 
     self.surface.present();
 
-    self.device.poll(false, null);
+    _ = self.device.poll(false, null);
 }
 
 pub fn release(self: *Renderer) void {
