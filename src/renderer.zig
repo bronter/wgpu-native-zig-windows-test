@@ -112,7 +112,7 @@ pub fn render(self: *Renderer) !void {
         .label = "render command encoder"
     }) orelse return error.CouldNotCreateCommandEncoder;
 
-    const render_pass_color_attachments = [_]wgpu.ColorAttachment {
+    const render_pass_color_attachments = &[_]wgpu.ColorAttachment {
         wgpu.ColorAttachment {
             .view = target_view,
             .clear_value = wgpu.Color { .r = 0.9, .g = 0.1, .b = 0.2, .a = 1.0 },
