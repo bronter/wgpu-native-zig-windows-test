@@ -57,7 +57,7 @@ pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hw
     })) orelse return error.CouldNotCreateShader;
     defer shader_module.release();
 
-    const color_targets = [_]wgpu.ColorTargetState {
+    const color_targets = &[_]wgpu.ColorTargetState {
         wgpu.ColorTargetState {
             .format = self.surface_config.format,
             .blend = &wgpu.BlendState {
@@ -132,12 +132,12 @@ pub fn render(self: *Renderer) !void {
     const command_buffer = encoder.finish(&wgpu.CommandBufferDescriptor {
         .label = "render command buffer",
     }) orelse return error.CouldNotFinishCommandEncoder;
-    const commands = [_] wgpu.CommandBuffer {
+    const commands = [_] *const wgpu.CommandBuffer {
         command_buffer,
     };
     encoder.release();
 
-    self.queue.submit(1, commands);
+    self.queue.submit(1, &commands);
 
     command_buffer.release();
     target_view.release();
