@@ -59,7 +59,7 @@ pub export fn wWinMain(
 
     _ = windows_and_messaging.ShowWindow(hwnd, @bitCast(nCmdShow));
 
-    var renderer = try Renderer.create(640, 480, hInstance, hwnd) catch return FALSE;
+    var renderer = Renderer.create(640, 480, hInstance, hwnd) catch return FALSE;
     const renderer_ptr = &renderer;
 
     var msg: windows_and_messaging.MSG = undefined;
