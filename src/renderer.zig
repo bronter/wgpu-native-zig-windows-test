@@ -137,7 +137,7 @@ pub fn render(self: *Renderer) !void {
     };
     encoder.release();
 
-    self.queue.submit(1, &commands);
+    self.queue.submit(&commands);
 
     command_buffer.release();
     target_view.release();
