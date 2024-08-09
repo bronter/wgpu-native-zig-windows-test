@@ -80,8 +80,8 @@ pub export fn wWinMain(
     }
 
     renderer_ptr.release();
-    windows_and_messaging.DestroyWindow(hwnd);
-    windows_and_messaging.UnregisterClass(class_name, hInstance);
+    _ = windows_and_messaging.DestroyWindow(hwnd);
+    _ = windows_and_messaging.UnregisterClass(class_name, hInstance);
 
     return FALSE;
 }
