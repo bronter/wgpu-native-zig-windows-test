@@ -2,6 +2,8 @@ const std = @import("std");
 const win32 = @import("zigwin32");
 const Renderer = @import("renderer.zig");
 
+// Needs to be here or the compiler throws a fit.
+pub const UNICODE = true;
 
 // String literals in Zig are UTF-8 encoded by default, but the Windows API needs them to be UTF-16 encoded.
 // This function converts a UTF-8 string literal to a zero-terminated UTF-16LE string literal.
