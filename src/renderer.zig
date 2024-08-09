@@ -82,7 +82,7 @@ pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hw
         },
         .primitive = wgpu.PrimitiveState {},
         .multisample = wgpu.MultisampleState {},
-        .fragment = wgpu.FragmentState {
+        .fragment = &wgpu.FragmentState {
             .module = shader_module,
             .entry_point = "fs_main",
             .target_count = color_targets.len,
