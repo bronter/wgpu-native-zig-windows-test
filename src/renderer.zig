@@ -102,7 +102,7 @@ pub fn render(self: *Renderer) !void {
 
     const target_view = surface_texture.texture.createView(&wgpu.TextureViewDescriptor {
         .label = "surface texture view",
-        .format = surface_texture.getFormat(),
+        .format = surface_texture.texture.getFormat(),
         .dimension = wgpu.ViewDimension.@"2d",
         .mip_level_count = 1,
         .array_layer_count = 1,

@@ -73,7 +73,9 @@ pub export fn wWinMain(
                 should_quit = true;
             }
         } else {
-            renderer_ptr.render();
+            renderer_ptr.render() catch {
+                should_quit = true;
+            };
         }
     }
 
