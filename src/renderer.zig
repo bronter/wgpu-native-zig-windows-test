@@ -52,9 +52,9 @@ pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hw
 
     // Render pipeline stuff
     // -------------------------------------------------------------------------
-    const shader_module = self.device.createShaderModule(&wgpu.shaderModuleWGSLDescriptor {
+    const shader_module = self.device.createShaderModule(&wgpu.shaderModuleWGSLDescriptor(.{
         .code = @embedFile("./shader.wgsl"),
-    }) orelse return error.CouldNotCreateShader;
+    })) orelse return error.CouldNotCreateShader;
     defer shader_module.release();
 
     const color_targets = [_]wgpu.ColorTargetState {
