@@ -18,7 +18,7 @@ pub export fn wWinMain(
     hInstance: win32.foundation.HINSTANCE,
     _: ?win32.foundation.HINSTANCE,
     _: [*:0]u16,
-    nCmdShow: windows_and_messaging.SHOW_WINDOW_CMD
+    nCmdShow: u32
 ) callconv(WINAPI) c_int {
     const class_name = L("wgpu-native-zig windows example");
     const class = windows_and_messaging.WNDCLASS {

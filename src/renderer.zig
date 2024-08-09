@@ -9,7 +9,7 @@ queue: *wgpu.Queue,
 surface_config: wgpu.SurfaceConfiguration,
 pipeline: *wgpu.RenderPipeline,
 
-pub fn create(width: u32, height: u32, hInstance: win32.foundation.HINSTANCE, hwnd: win32.foundation.HWND) !Renderer {
+pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hwnd: win32.foundation.HWND) !Renderer {
     var self: Renderer = undefined;
 
     const instance = wgpu.Instance.create(null) orelse return error.CouldNotCreateInstance;
@@ -17,7 +17,7 @@ pub fn create(width: u32, height: u32, hInstance: win32.foundation.HINSTANCE, hw
 
     self.surface = instance.createSurface(&wgpu.surfaceDescriptorFromWindowsHWND(.{
         .label = "HWND_surface",
-        .hInstance = hInstance,
+        .hinstance = hinstance,
         .hwnd = hwnd,
     })) orelse return error.CouldNotCreateSurface;
 
