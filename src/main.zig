@@ -57,7 +57,7 @@ pub export fn wWinMain(
         null,
     ) orelse return FALSE;
 
-    _ = windows_and_messaging.ShowWindow(hwnd, nCmdShow);
+    _ = windows_and_messaging.ShowWindow(hwnd, @as(windows_and_messaging.SHOW_WINDOW_CMD, nCmdShow));
 
     var renderer = &(try Renderer.create(640, 480, hInstance, hwnd));
 
