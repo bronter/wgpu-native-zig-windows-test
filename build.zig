@@ -40,6 +40,11 @@ pub fn build(b: *std.Build) void {
     // such a dependency.
     const run_cmd = b.addRunArtifact(exe);
 
+    // run_cmd.addPathDir(b.getInstallPath(.bin, ""));
+    const dll_path = wgpu_native_dep.namedWriteFiles("lib").getDirectory().join(b.allocator, "wgpu_native.dll") catch @panic("OOM");
+    const install_dll = b.addInstallBinFile(dll_path, "wgpu_native.dll");
+    b.getInstallStep().dependOn(&install_dll.step);
+    b.getInstallStep().dependOn(wgpu_native_dep.builder.getInstallStep());
     // By making the run step depend on the install step, it will be run from the
     // installation directory rather than directly from within the cache directory.
     // This is not necessary, however, if the application depends on other installed
