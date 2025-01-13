@@ -40,7 +40,6 @@ pub fn build(b: *std.Build) void {
     // such a dependency.
     const run_cmd = b.addRunArtifact(exe);
 
-    // run_cmd.addPathDir(b.getInstallPath(.bin, ""));
     const dll_path = wgpu_native_dep.namedWriteFiles("lib").getDirectory().join(b.allocator, "wgpu_native.dll") catch @panic("OOM");
     const install_dll = b.addInstallBinFile(dll_path, "wgpu_native.dll");
     b.getInstallStep().dependOn(&install_dll.step);
