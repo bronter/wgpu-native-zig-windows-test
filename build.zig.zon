@@ -44,8 +44,8 @@
         //    .lazy = false,
         //},
         .wgpu_native_zig = .{
-            .url = "https://github.com/bronter/wgpu-native-zig/archive/refs/heads/fix-windows-build.tar.gz",
-            .hash = "1220054411f987e025cf1865363db1a5aa04f254760f2d6684b09363215e0e778f90",
+            .url = "https://github.com/bronter/wgpu-native-zig/archive/adb7695d1e6438581038cb812d3f92c9bef1bb38.tar.gz",
+            .hash = "1220457deeb9d7ae4b71944b49771549d15bba7a24bd97af8a6581576700a3f740e3",
         },
         .zigwin32 = .{
             .url = "https://github.com/marlersoft/zigwin32/archive/407a4c7b869ee3d10db520fdfae8b9faf9b2adb5.tar.gz",
