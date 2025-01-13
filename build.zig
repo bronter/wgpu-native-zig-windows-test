@@ -8,7 +8,12 @@ pub fn build(b: *std.Build) void {
     // what target to build for. Here we do not override the defaults, which
     // means any target is allowed, and the default is native. Other options
     // for restricting supported target set are available.
-    const target = b.standardTargetOptions(.{});
+    const target = b.standardTargetOptions(.{
+        .default_target = .{
+            .cpu_arch = .x86_64,
+            .os_tag = .windows,
+        }
+    });
 
     // Standard optimization options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
@@ -21,13 +26,16 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
+    exe.mingw_unicode_entry_point = true;
 
-    const wgpu_native_dep = b.dependency("wgpu_native_zig", .{});
+    const wgpu_native_dep = b.dependency("wgpu_native_zig", .{
+        .target = target,
+        .link_mode = .dynamic,
+    });
     const zigwin32_dep = b.dependency("zigwin32", .{});
 
     exe.root_module.addImport("wgpu", wgpu_native_dep.module("wgpu"));
 
-    exe.mingw_unicode_entry_point = true;
     exe.root_module.addImport("zigwin32", zigwin32_dep.module("zigwin32"));
 
     // This declares intent for the executable to be installed into the
