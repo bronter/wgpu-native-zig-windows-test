@@ -44,8 +44,8 @@
         //    .lazy = false,
         //},
         .wgpu_native_zig = .{
-            .url = "https://github.com/bronter/wgpu-native-zig/archive/0a48821fa241a34c1aca68e46f9e2c717a3fd580.tar.gz",
-            .hash = "1220f9497c8163b30334ef52c72d28d452573e9e6da8a01c119f36e1126bad7d72ca",
+            .url = "https://github.com/bronter/wgpu-native-zig/archive/4bca221102e11b117c0e2a916a1916a8d76099ba.tar.gz",
+            .hash = "122031b6bfacb56c56b8c01b44141830d806bc44c3405bb2aa461efe3becd5046d8e",
         },
         .zigwin32 = .{
             .url = "https://github.com/marlersoft/zigwin32/archive/407a4c7b869ee3d10db520fdfae8b9faf9b2adb5.tar.gz",

@@ -12,6 +12,7 @@ pub fn build(b: *std.Build) void {
         .default_target = .{
             .cpu_arch = .x86_64,
             .os_tag = .windows,
+            .abi = .msvc,
         }
     });
 
@@ -26,11 +27,14 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    exe.mingw_unicode_entry_point = true;
+    // The linker seems to be looking for a `main` symbol unless we manually specify the entry point.
+    // See https://github.com/ziglang/zig/issues/7852
+    // Note that this is specific to MSVC, when using the gnu abi this issue does not arise and you do not need to manually specify the entry point.
+    exe.entry = .{ .symbol_name = "wWinMain" };
 
+    exe.mingw_unicode_entry_point = true;
     const wgpu_native_dep = b.dependency("wgpu_native_zig", .{
-        .target = target,
-        .link_mode = .dynamic,
+        .target = target
     });
     const zigwin32_dep = b.dependency("zigwin32", .{});
 
@@ -48,9 +52,6 @@ pub fn build(b: *std.Build) void {
     // such a dependency.
     const run_cmd = b.addRunArtifact(exe);
 
-    const dll_path = wgpu_native_dep.namedWriteFiles("lib").getDirectory().join(b.allocator, "wgpu_native.dll") catch @panic("OOM");
-    const install_dll = b.addInstallBinFile(dll_path, "wgpu_native.dll");
-    b.getInstallStep().dependOn(&install_dll.step);
     // By making the run step depend on the install step, it will be run from the
     // installation directory rather than directly from within the cache directory.
     // This is not necessary, however, if the application depends on other installed

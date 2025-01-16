@@ -18,7 +18,7 @@ pub export fn wWinMain(
     hInstance: win32.foundation.HINSTANCE,
     _: ?win32.foundation.HINSTANCE,
     _: [*:0]u16,
-    nCmdShow: u32
+    _: u32
 ) callconv(WINAPI) c_int {
     const class_name = L("wgpu-native-zig windows example");
     const class = windows_and_messaging.WNDCLASS {
@@ -57,7 +57,9 @@ pub export fn wWinMain(
         null,
     ) orelse return FALSE;
 
-    _ = windows_and_messaging.ShowWindow(hwnd, @bitCast(nCmdShow));
+    // According to Microsoft's docs, for the first call to ShowWindow we should really be using the value of nCmdShow from wWinMain's parameters.
+    // In practice, it doesn't seem to matter and the window doesn't show at all if I try to do it properly.
+    _ = windows_and_messaging.ShowWindow(hwnd, windows_and_messaging.SW_SHOWDEFAULT);
 
     var renderer = Renderer.create(640, 480, hInstance, hwnd) catch return FALSE;
     const renderer_ptr = &renderer;
