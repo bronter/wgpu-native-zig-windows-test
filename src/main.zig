@@ -57,31 +57,31 @@ pub export fn wWinMain(
         null,
     ) orelse return FALSE;
 
+    var _renderer = Renderer.create(640, 480, hInstance, hwnd) catch return FALSE;
+    const renderer = &_renderer;
+
     // According to Microsoft's docs, for the first call to ShowWindow we should really be using the value of nCmdShow from wWinMain's parameters.
     // In practice, it doesn't seem to matter and the window doesn't show at all if I try to do it properly.
     _ = windows_and_messaging.ShowWindow(hwnd, windows_and_messaging.SW_SHOWDEFAULT);
 
-    var renderer = Renderer.create(640, 480, hInstance, hwnd) catch return FALSE;
-    const renderer_ptr = &renderer;
-
     var msg: windows_and_messaging.MSG = undefined;
-    var should_quit = false;
-    while (!should_quit) {
-        if (windows_and_messaging.PeekMessage(&msg, hwnd, 0, 0, windows_and_messaging.PM_REMOVE) != 0) {
+    while (true) {
+        // Pass null as hwnd parameter to PeeekMessage in order to receive all messages;
+        // otherwise we don't receive WM_QUIT since it is posted to the thread's message queue rather than the window's message queue.
+        if (windows_and_messaging.PeekMessage(&msg, null, 0, 0, windows_and_messaging.PM_REMOVE) != 0) {
+            if (msg.message == windows_and_messaging.WM_QUIT) {
+                break;
+            }
             _ = windows_and_messaging.TranslateMessage(&msg);
             _ = windows_and_messaging.DispatchMessage(&msg);
-
-            if (msg.message == windows_and_messaging.WM_QUIT) {
-                should_quit = true;
-            }
         } else {
-            renderer_ptr.render() catch {
-                should_quit = true;
+            renderer.render() catch {
+                break;
             };
         }
     }
 
-    renderer_ptr.release();
+    renderer.release();
     _ = windows_and_messaging.DestroyWindow(hwnd);
     _ = windows_and_messaging.UnregisterClass(class_name, hInstance);
 
