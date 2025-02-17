@@ -27,14 +27,12 @@ pub fn build(b: *std.Build) void {
         .target = target,
         .optimize = optimize,
     });
-    // The linker seems to be looking for a `main` symbol unless we manually specify the entry point.
-    // See https://github.com/ziglang/zig/issues/7852
-    // Note that this is specific to MSVC, when using the gnu abi this issue does not arise and you do not need to manually specify the entry point.
-    exe.entry = .{ .symbol_name = "wWinMain" };
-
+    exe.subsystem = .Windows;
     exe.mingw_unicode_entry_point = true;
+
     const wgpu_native_dep = b.dependency("wgpu_native_zig", .{
-        .target = target
+        .target = target,
+        .optimize = optimize,
     });
     const zigwin32_dep = b.dependency("zigwin32", .{});
 
