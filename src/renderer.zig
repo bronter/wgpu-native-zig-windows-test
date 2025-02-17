@@ -40,11 +40,14 @@ pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hw
 
     self.queue = self.device.getQueue() orelse return error.CouldNotGetQueue;
 
+    var surface_capabilities: wgpu.SurfaceCapabilities = undefined;
+    self.surface.getCapabilities(adapter, &surface_capabilities);
+
     // TODO: Figure out if it's possible to get width/height from the window instead of having to pass them in.
     self.surface_config = wgpu.SurfaceConfiguration {
         .width = width,
         .height = height,
-        .format = self.surface.getPreferredFormat(adapter),
+        .format = surface_capabilities.formats[0],
         .device = self.device,
     };
 
