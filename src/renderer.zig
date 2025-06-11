@@ -1,4 +1,4 @@
-const win32 = @import("zigwin32");
+const win32 = @import("win32");
 const wgpu = @import("wgpu");
 
 const Renderer = @This();
@@ -23,16 +23,16 @@ pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hw
 
     const adapter_request = instance.requestAdapterSync(&wgpu.RequestAdapterOptions{
         .compatible_surface = self.surface,
-    });
+    }, 0);
     const adapter = switch (adapter_request.status) {
         .success => adapter_request.adapter.?,
         else => return error.AdapterRequestFailed
     };
     defer adapter.release();
 
-    const device_request = adapter.requestDeviceSync(&wgpu.DeviceDescriptor {
+    const device_request = adapter.requestDeviceSync(instance, &wgpu.DeviceDescriptor {
         .required_limits = null,
-    });
+    }, 0);
     self.device = switch(device_request.status) {
         .success => device_request.device.?,
         else => return error.DeviceRequestFailed,
@@ -41,7 +41,9 @@ pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hw
     self.queue = self.device.getQueue() orelse return error.CouldNotGetQueue;
 
     var surface_capabilities: wgpu.SurfaceCapabilities = undefined;
-    self.surface.getCapabilities(adapter, &surface_capabilities);
+    if (self.surface.getCapabilities(adapter, &surface_capabilities) == wgpu.Status.@"error") {
+        return error.FailedToGetDeviceCapabilities;
+    }
 
     // TODO: Figure out if it's possible to get width/height from the window instead of having to pass them in.
     self.surface_config = wgpu.SurfaceConfiguration {
@@ -52,6 +54,7 @@ pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hw
     };
 
     self.surface.configure(&self.surface_config);
+    surface_capabilities.freeMembers();
 
     // Render pipeline stuff
     // -------------------------------------------------------------------------
@@ -81,13 +84,13 @@ pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hw
     self.pipeline = self.device.createRenderPipeline(&wgpu.RenderPipelineDescriptor {
         .vertex = wgpu.VertexState {
             .module = shader_module,
-            .entry_point = "vs_main",
+            .entry_point = wgpu.StringView.fromSlice("vs_main"),
         },
         .primitive = wgpu.PrimitiveState {},
         .multisample = wgpu.MultisampleState {},
         .fragment = &wgpu.FragmentState {
             .module = shader_module,
-            .entry_point = "fs_main",
+            .entry_point = wgpu.StringView.fromSlice("fs_main"),
             .target_count = color_targets.len,
             .targets = color_targets.ptr,
         },
@@ -99,20 +102,20 @@ pub fn create(width: u32, height: u32, hinstance: win32.foundation.HINSTANCE, hw
 pub fn render(self: *Renderer) !void {
     var surface_texture: wgpu.SurfaceTexture = undefined;
     self.surface.getCurrentTexture(&surface_texture);
-    if (surface_texture.status != wgpu.GetCurrentTextureStatus.success) {
+    if (surface_texture.status != .success_optimal and surface_texture.status != .success_suboptimal) {
         return error.SurfaceTextureNotSuccessfulStatus; // TODO: find a better name for that
     }
 
-    const target_view = surface_texture.texture.createView(&wgpu.TextureViewDescriptor {
-        .label = "surface texture view",
-        .format = surface_texture.texture.getFormat(),
+    const target_view = surface_texture.texture.?.createView(&wgpu.TextureViewDescriptor {
+        .label = wgpu.StringView.fromSlice("surface texture view"),
+        .format = surface_texture.texture.?.getFormat(),
         .dimension = wgpu.ViewDimension.@"2d",
         .mip_level_count = 1,
         .array_layer_count = 1,
     }) orelse return error.CouldNotCreateTextureView;
 
     const encoder = self.device.createCommandEncoder(&wgpu.CommandEncoderDescriptor {
-        .label = "render command encoder"
+        .label = wgpu.StringView.fromSlice("render command encoder"),
     }) orelse return error.CouldNotCreateCommandEncoder;
 
     const render_pass_color_attachments = &[_]wgpu.ColorAttachment {
@@ -133,7 +136,7 @@ pub fn render(self: *Renderer) !void {
     render_pass.release();
 
     const command_buffer = encoder.finish(&wgpu.CommandBufferDescriptor {
-        .label = "render command buffer",
+        .label = wgpu.StringView.fromSlice("render command buffer"),
     }) orelse return error.CouldNotFinishCommandEncoder;
     const commands = [_] *const wgpu.CommandBuffer {
         command_buffer,
@@ -145,7 +148,9 @@ pub fn render(self: *Renderer) !void {
     command_buffer.release();
     target_view.release();
 
-    self.surface.present();
+    if (self.surface.present() == wgpu.Status.@"error") {
+        return error.SurfacePresentUnsuccessful;
+    }
 
     _ = self.device.poll(false, null);
 }

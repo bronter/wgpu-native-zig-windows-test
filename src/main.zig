@@ -1,5 +1,5 @@
 const std = @import("std");
-const win32 = @import("zigwin32");
+const win32 = @import("win32");
 const Renderer = @import("renderer.zig");
 
 // Needs to be here or the compiler throws a fit.

@@ -17,6 +17,7 @@ pub fn build(b: *std.Build) void {
         // }
     });
 
+
     // Standard optimization options allow the person running `zig build` to select
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall. Here we do not
     // set a preferred release mode, allowing the user to decide how to optimize.
@@ -31,15 +32,21 @@ pub fn build(b: *std.Build) void {
     exe.subsystem = .Windows;
     exe.mingw_unicode_entry_point = true;
 
+    if (target.result.abi == .msvc) {
+        // We need to disable these or we get duplicate symbol errors when linking
+        exe.bundle_compiler_rt = false;
+        exe.bundle_ubsan_rt = false;
+    }
+
     const wgpu_native_dep = b.dependency("wgpu_native_zig", .{
         .target = target,
         .optimize = optimize,
     });
-    const zigwin32_dep = b.dependency("zigwin32", .{});
+    const win32_dep = b.dependency("win32", .{});
 
     exe.root_module.addImport("wgpu", wgpu_native_dep.module("wgpu"));
 
-    exe.root_module.addImport("zigwin32", zigwin32_dep.module("zigwin32"));
+    exe.root_module.addImport("win32", win32_dep.module("win32"));
 
     // This declares intent for the executable to be installed into the
     // standard location when the user invokes the "install" step (the default
